@@ -2,9 +2,14 @@ provider "aws" {
   region       = "eu-central-1"
 }
 
+variable "bucket_name" {
+  type         = "string"
+  default      = "birm-tstbckt"
+}
+
 # Initialization/creation of bucket
 resource "aws_s3_bucket" "web_bucket" {
-  bucket       = "birm-tstbckt"
+  bucket       = "${var.bucket_name}"
   website {
     index_document = "index.html"
     error_document = "error.html"
@@ -14,7 +19,7 @@ resource "aws_s3_bucket" "web_bucket" {
 #  HTML Files can be downloaded from previous task repo...
 
 resource "aws_s3_bucket_object" "index_page" {
-  bucket       = "birm-tstbckt"
+  bucket       = "${var.bucket_name}"
   key          = "index.html"
   content_type = "text/html"
   acl          = "public-read"
@@ -24,7 +29,7 @@ resource "aws_s3_bucket_object" "index_page" {
 }
 
 resource "aws_s3_bucket_object" "error_page" {
-  bucket       = "birm-tstbckt"
+  bucket       = "${var.bucket_name}"
   key          = "error.html"
   content_type = "text/html"
   acl          = "public-read"
