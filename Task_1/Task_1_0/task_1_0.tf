@@ -4,7 +4,7 @@ provider "aws" {
 
 # Initialization/creation of bucket
 resource "aws_s3_bucket" "web_bucket" {
-  bucket = "birm-tstbckt"
+  bucket       = "birm-tstbckt"
   website {
     index_document = "index.html"
     error_document = "error.html"
@@ -18,8 +18,8 @@ resource "aws_s3_bucket_object" "index_page" {
   key          = "index.html"
   content_type = "text/html"
   acl          = "public-read"
-  source       = "E:/S3Website/index.html"
-  etag         = "${md5(file("E:/S3Website/index.html"))}"
+  source       = "./S3Website/index.html"
+  etag         = "${md5(file("./S3Website/index.html"))}"
   depends_on   = ["aws_s3_bucket.web_bucket"]
 }
 
@@ -28,7 +28,7 @@ resource "aws_s3_bucket_object" "error_page" {
   key          = "error.html"
   content_type = "text/html"
   acl          = "public-read"
-  source       = "E:/S3Website/error.html"
-  etag         = "${md5(file("E:/S3Website/error.html"))}"
+  source       = "./S3Website/error.html"
+  etag         = "${md5(file("./S3Website/error.html"))}"
   depends_on   = ["aws_s3_bucket.web_bucket"]
 }
