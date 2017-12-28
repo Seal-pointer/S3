@@ -1,0 +1,27 @@
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - include_vars:
+        file: cred.yml
+        name: cred
+# Create an empty s3 bucket
+    - s3_bucket:
+        aws_access_key: "{{ cred.s3_access_key }}"
+        aws_secret_key: "{{ cred.s3_secret_key }}"
+        name: birm-ansbckt
+# Uploading html files
+    - s3_sync:
+        bucket: birm-ansbckt
+        file_root: S3Website
+        mime_map:
+          .html: text/html
+        file_change_strategy: force
+        permission: public-read
+        include: "*.html"
+# Configuring bucket as website
+    - s3_website:
+        name: birm-ansbckt
+        suffix: index.html
+        error_key: error.html
+        state: present
