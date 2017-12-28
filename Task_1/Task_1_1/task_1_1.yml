@@ -1,7 +1,9 @@
+# Main node
 - hosts: localhost
   connection: local
   gather_facts: False
   tasks:
+# External variables
     - include_vars:
         file: cred.yml
         name: cred
@@ -10,7 +12,7 @@
         aws_access_key: "{{ cred.s3_access_key }}"
         aws_secret_key: "{{ cred.s3_secret_key }}"
         name: birm-ansbckt
-# Uploading html files
+# Uploading html files (can be found in Task_0)
     - s3_sync:
         bucket: birm-ansbckt
         file_root: S3Website
