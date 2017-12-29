@@ -54,6 +54,8 @@ aws ec2 modify-subnet-attribute --subnet-id subnet-xxxxxxxx --map-public-ip-on-l
 # Cleanup sequence
 aws ec2 delete-subnet --subnet-id subnet-xxxxxxxx
 aws ec2 delete-subnet --subnet-id subnet-xxxxxxxx
+aws ec2 delete-network-acl --network-acl-id acl-xxxxxxxx
+aws ec2 delete-network-acl --network-acl-id acl-xxxxxxxx
 aws ec2 delete-route-table --route-table-id rtb-xxxxxxxx
 aws ec2 detach-internet-gateway --internet-gateway-id igw-xxxxxxxx --vpc-id vpc-xxxxxxxx
 aws ec2 delete-internet-gateway --internet-gateway-id igw-xxxxxxxx
