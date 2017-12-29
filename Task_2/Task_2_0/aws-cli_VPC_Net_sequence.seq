@@ -13,14 +13,42 @@ aws ec2 create-tags --resources subnet-xxxxxxxx --tags Key=Name,Value="Private s
 aws ec2 create-internet-gateway
 aws ec2 attach-internet-gateway --vpc-id vpc-xxxxxxxx --internet-gateway-id igw-xxxxxxxx
 
-# Create route table
+# Create a route table
 aws ec2 create-route-table --vpc-id vpc-xxxxxxxx
 # Create a route in the route table that points all traffic to the Internet gateway.
 aws ec2 create-route --route-table-id rtb-xxxxxxxx --destination-cidr-block "0.0.0.0/0" --gateway-id igw-xxxxxxxx
 # Associate subnet with the custom route table
 aws ec2 associate-route-table  --subnet-id subnet-xxxxxxxx --route-table-id rtb-xxxxxxxx
+
+# Create an ACL and assign name
+aws ec2 create-network-acl --vpc-id vpc-xxxxxxxx
+aws ec2 create-tags --resources acl-xxxxxxxx --tags Key=Name,Value="Public ACL"
+# Associate ACL with public subnet
+aws ec2 replace-network-acl-association --association-id aclassoc-xxxxxxxx --network-acl-id acl-xxxxxxxx
+# Assign rules to "Public ACL"
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --ingress --rule-number 100 --protocol all --cidr-block 10.0.0.0/26 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --ingress --rule-number 110 --protocol tcp --port-range From=80,To=80 --cidr-block 0.0.0.0/0 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --ingress --rule-number 111 --protocol tcp --port-range From=22,To=22 --cidr-block 0.0.0.0/0 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 100 --protocol all --cidr-block 10.0.0.0/26 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 110 --protocol tcp --port-range From=443,To=443 --cidr-block 10.0.0.32/27 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 111 --protocol tcp --port-range From=80,To=80 --cidr-block 10.0.0.32/27 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 112 --protocol tcp --port-range From=22,To=22 --cidr-block 10.0.0.32/27 --rule-action allow
+# Create an ACL and assign name
+aws ec2 create-network-acl --vpc-id vpc-xxxxxxxx
+aws ec2 create-tags --resources acl-xxxxxxxx --tags Key=Name,Value="Private ACL"
+# Associate ACL with public subnet
+aws ec2 replace-network-acl-association --association-id aclassoc-xxxxxxxx --network-acl-id acl-xxxxxxxx
+# Assign rules to "Public ACL"
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --ingress --rule-number 110 --protocol tcp --port-range From=443,To=443 --cidr-block 10.0.0.0/26 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --ingress --rule-number 111 --protocol tcp --port-range From=80,To=80 --cidr-block 10.0.0.0/26 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --ingress --rule-number 112 --protocol tcp --port-range From=22,To=22 --cidr-block 10.0.0.0/26 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 110 --protocol tcp --port-range From=443,To=443 --cidr-block 10.0.0.32/27 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 111 --protocol tcp --port-range From=80,To=80 --cidr-block 10.0.0.32/27 --rule-action allow
+aws ec2 create-network-acl-entry --network-acl-id acl-xxxxxxxx --egress --rule-number 112 --protocol tcp --port-range From=22,To=22 --cidr-block 10.0.0.32/27 --rule-action allow
+
 # Set automatic receiving a public IP address by instances
 aws ec2 modify-subnet-attribute --subnet-id subnet-xxxxxxxx --map-public-ip-on-launch
+
 
 
 # Cleanup sequence
