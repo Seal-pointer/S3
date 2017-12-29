@@ -1,0 +1,32 @@
+# Create a custom VPC and assign a name
+aws ec2 create-vpc --cidr-block "10.0.0.0/26"
+aws ec2 create-tags --resources vpc-xxxxxxxx --tags Key=Name,Value=VPC-2n-example
+
+# Create a first (public) subnet and assign name
+aws ec2 create-subnet --vpc-id vpc-xxxxxxxx --cidr-block "10.0.0.0/27"
+aws ec2 create-tags --resources subnet-xxxxxxxx --tags Key=Name,Value="Public subnet"
+# Create a second (private) subnet and assign name
+aws ec2 create-subnet --vpc-id vpc-xxxxxxxx --cidr-block "10.0.0.32/27"
+aws ec2 create-tags --resources subnet-xxxxxxxx --tags Key=Name,Value="Private subnet"
+
+# Create an Internet gateway and attach the Internet gateway to VPC
+aws ec2 create-internet-gateway
+aws ec2 attach-internet-gateway --vpc-id vpc-xxxxxxxx --internet-gateway-id igw-xxxxxxxx
+
+# Create route table
+aws ec2 create-route-table --vpc-id vpc-xxxxxxxx
+# Create a route in the route table that points all traffic to the Internet gateway.
+aws ec2 create-route --route-table-id rtb-xxxxxxxx --destination-cidr-block "0.0.0.0/0" --gateway-id igw-xxxxxxxx
+# Associate subnet with the custom route table
+aws ec2 associate-route-table  --subnet-id subnet-xxxxxxxx --route-table-id rtb-xxxxxxxx
+# Set automatic receiving a public IP address by instances
+aws ec2 modify-subnet-attribute --subnet-id subnet-xxxxxxxx --map-public-ip-on-launch
+
+
+# Cleanup sequence
+aws ec2 delete-subnet --subnet-id subnet-xxxxxxxx
+aws ec2 delete-subnet --subnet-id subnet-xxxxxxxx
+aws ec2 delete-route-table --route-table-id rtb-xxxxxxxx
+aws ec2 detach-internet-gateway --internet-gateway-id igw-xxxxxxxx --vpc-id vpc-xxxxxxxx
+aws ec2 delete-internet-gateway --internet-gateway-id igw-xxxxxxxx
+aws ec2 delete-vpc --vpc-id vpc-xxxxxxxx
